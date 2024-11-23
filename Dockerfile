@@ -8,10 +8,10 @@ WORKDIR /app
 COPY . /app
 
 # 安装所需的依赖
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install gunicorn
 
 # 暴露 Flask 应用的默认端口
 EXPOSE 5000
-
-# 设置容器启动时运行的命令
-CMD ["python", "app.py"]
+# 使用 gunicorn 启动 Flask 应用
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]

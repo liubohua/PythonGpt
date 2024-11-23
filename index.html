@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT 接入网站</title>
+</head>
+<body>
+    <h1>与 ChatGPT 对话</h1>
+    <div>
+        <textarea id="userInput" placeholder="输入你的问题..."></textarea><br>
+        <button onclick="sendMessage()">发送</button>
+    </div>
+    <div id="chatBox"></div>
+
+    <script>
+        function sendMessage() {
+            const message = document.getElementById("userInput").value;
+            if (!message) {
+                alert("请输入消息！");
+                return;
+            }
+
+            fetch('http://localhost:5000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let chatBox = document.getElementById("chatBox");
+                if (data.error) {
+                    chatBox.innerHTML += `<p>服务器错误: ${data.error}</p>`;
+                } else {
+                    chatBox.innerHTML += `<p>你: ${message}</p>`;
+                    chatBox.innerHTML += `<p>ChatGPT: ${data.response}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('发生错误:', error);
+            });
+        }
+    </script>
+</body>
+</html>

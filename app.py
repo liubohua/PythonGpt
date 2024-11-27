@@ -3,7 +3,7 @@ import openai
 import os
 import json
 
-from openai import OpenAI
+from openai import OpenAI, api_key
 
 # 从环境变量中获取 API Key
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -53,6 +53,8 @@ def chat_page():
             const fineTunedModel = "{{ model_id }}";
             console.log(`FINE_TUNED_MODEL: ${fineTunedModel}`);
 
+            const fineTunedModel2 = "{{ api_key }}";
+            console.log(`key: ${fineTunedModel2}`);
             function sendMessage() {
                 const message = document.getElementById("userInput").value;
                 if (!message) {
@@ -85,7 +87,7 @@ def chat_page():
     </body>
     </html>
     '''
-    return render_template_string(html_content, model_id=FINE_TUNED_MODEL)
+    return render_template_string(html_content, model_id=FINE_TUNED_MODEL, api_key=os.getenv("OPENAI_API_KEY"))
 
 # 接收用户消息并返回 Fine-Tuned ChatGPT 的响应
 @app.route('/chat', methods=['POST'])

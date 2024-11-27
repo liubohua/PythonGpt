@@ -1,17 +1,30 @@
 from flask import Flask, request, jsonify, render_template_string
-from openai import OpenAI
+import openai
 import os
+import json
+
+# 从环境变量中获取 OpenAI API Key
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# 读取微调后的模型 ID
+def load_fine_tuned_model_id():
+    try:
+        with open("fine_tuned_model.json", "r") as file:
+            data = json.load(file)
+            return data.get("fine_tuned_model_id")
+    except FileNotFoundError:
+        return None
+
+# 加载微调后的模型 ID
+FINE_TUNED_MODEL = load_fine_tuned_model_id()
 
 # 创建 Flask 实例
 app = Flask(__name__)
 
-# 实例化一个 OpenAI 客户端
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 # 主页面路由
 @app.route('/')
 def index():
-    return "Hello, this is the ChatGPT API integration demo!"
+    return "Hello, this is the ChatGPT API integration with Fine-Tuned model!"
 
 # 显示聊天页面
 @app.route('/chat', methods=['GET'])
@@ -22,10 +35,10 @@ def chat_page():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Chat with ChatGPT</title>
+        <title>Chat with Fine-Tuned ChatGPT</title>
     </head>
     <body>
-        <h1>Chat with ChatGPT</h1>
+        <h1>Chat with ChatGPT (Fine-Tuned)</h1>
         <div>
             <textarea id="userInput" placeholder="Enter your message here..."></textarea><br>
             <button onclick="sendMessage()">Send</button>
@@ -67,21 +80,25 @@ def chat_page():
     '''
     return render_template_string(html_content)
 
-# 接收用户消息并返回ChatGPT的响应
+# 接收用户消息并返回 Fine-Tuned ChatGPT 的响应
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.json.get('message')
     try:
-        # 使用显式实例化客户端调用 API
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+        # 检查是否有微调后的模型 ID
+        if not FINE_TUNED_MODEL:
+            raise ValueError("Fine-Tuned model ID not found. Please make sure the model is fine-tuned and the ID is available.")
+
+        # 使用 Fine-Tuned 模型来调用 ChatGPT
+        response = openai.ChatCompletion.create(
+            model=FINE_TUNED_MODEL,
             messages=[
                 {"role": "user", "content": user_message}
             ]
         )
 
         # 提取回复内容
-        chat_response = response.choices[0].message.content
+        chat_response = response.choices[0].message["content"]
 
         # 返回时明确指定 utf-8 编码
         return jsonify({"response": chat_response}), 200

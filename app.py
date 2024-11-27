@@ -5,7 +5,7 @@ from openai import OpenAI
 app = Flask(__name__)
 
 # 实例化一个 OpenAI 客户端
-client = OpenAI(api_key='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')
+client = OpenAI(api_key='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')
 
 # 主页面路由
 @app.route('/')

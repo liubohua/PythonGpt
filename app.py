@@ -39,7 +39,7 @@ def chat_page():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Chat with Fine-Tuned ChatGPT</title>
+        <title>Chat with Fine-Tuned ChatGPT FINE_TUNED_MODEL: {FINE_TUNED_MODEL}</title>
         <script>
             console.log("FINE_TUNED_MODEL: {FINE_TUNED_MODEL}");
         </script>

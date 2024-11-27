@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, jsonify, render_template_string
 from openai import OpenAI
+import logging
 
 # 创建 Flask 实例
 app = Flask(__name__)
@@ -11,9 +12,11 @@ client = OpenAI(api_key=key)
 with open("fine_tuned_model.json", "r") as f:
     FINE_TUNED_MODEL = f.read().strip()
 
-print(f"Using model ID: {FINE_TUNED_MODEL}")
-print(f"API:{key}")
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
+logger.debug(f"Using model ID: {FINE_TUNED_MODEL}")
+logger.debug(f"API Key: {key}")
 # 主页面路由
 @app.route('/')
 def index():

@@ -7,6 +7,6 @@ services:
       dockerfile: Dockerfile
     container_name: flask_app_container
     ports:
-      - "80:5000"  # 将容器的5000端口映射到主机的80端口
+      - "5000:5000"  # 将容器的5000端口映射到主机的80端口
     volumes:
       - .:/app  # 挂载当前目录，确保代码更新自动反映到容器中

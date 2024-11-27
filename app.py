@@ -3,9 +3,10 @@ import openai
 import os
 import json
 
-# 从环境变量中获取 OpenAI API Key
-openai.api_key = os.getenv("OPENAI_API_KEY")
+from openai import OpenAI
 
+# 从环境变量中获取 API Key
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # 读取微调后的模型 ID
 def load_fine_tuned_model_id():
     try:
@@ -90,13 +91,8 @@ def chat_page():
 def chat():
     user_message = request.json.get('message')
     try:
-        # 检查是否有微调后的模型 ID
-        if not FINE_TUNED_MODEL:
-            raise ValueError("Fine-Tuned model ID not found. Please make sure the model is fine-tuned and the ID is available.")
-
-        # 使用 Fine-Tuned 模型来调用 ChatGPT
-        response = openai.ChatCompletion.create(
-            model=FINE_TUNED_MODEL,
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "user", "content": user_message}
             ]

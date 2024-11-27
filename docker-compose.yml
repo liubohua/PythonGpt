@@ -1,10 +1,12 @@
-version: '3.8'
+version: '3'
 
 services:
-  web:
-    build: .
+  flask_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flask_app_container
     ports:
-      - "6000:5000"
-    restart: unless-stopped
-    network_mode: "host"
-    container_name: my_flask_app
+      - "5000:5000"  # 将容器的5000端口映射到主机的80端口
+    volumes:
+      - .:/app  # 挂载当前目录，确保代码更新自动反映到容器中

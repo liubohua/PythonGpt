@@ -33,7 +33,6 @@ def index():
 # 显示聊天页面
 @app.route('/chat', methods=['GET'])
 def chat_page():
-    console.log(f"FINE_TUNED_MODEL：{FINE_TUNED_MODEL}")
     html_content = '''
     <!DOCTYPE html>
     <html lang="en">
@@ -41,6 +40,9 @@ def chat_page():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Chat with Fine-Tuned ChatGPT</title>
+        <script>
+            console.log("FINE_TUNED_MODEL: {FINE_TUNED_MODEL}");
+        </script>
     </head>
     <body>
         <h1>Chat with ChatGPT (Fine-Tuned)</h1>

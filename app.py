@@ -1,8 +1,8 @@
 import os
-from flask import Flask, request, jsonify, render_template_string
 from openai import OpenAI
 import logging
-
+import json
+from flask import Flask, request, jsonify, render_template_string
 # 创建 Flask 实例
 app = Flask(__name__)
 key = os.getenv("OPENAI_API_KEY")
@@ -10,7 +10,8 @@ key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=key)
 # 读取 Fine-Tuned 模型的 ID
 with open("fine_tuned_model.json", "r") as f:
-    FINE_TUNED_MODEL = f.read().strip()
+    fine_tuned_data = json.load(f)
+    FINE_TUNED_MODEL = fine_tuned_data.get("fine_tuned_model_id")
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)

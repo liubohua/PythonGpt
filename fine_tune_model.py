@@ -38,16 +38,24 @@ def start_fine_tuning(training_file_id, model="gpt-3.5-turbo"):
         print(f"Error starting Fine-Tuning job: {e}")
         return None
 
-# 查询 Fine-Tuning 任务状态
+# 查询 Fine-Tuning 任务状态并打印详细的失败信息
 def check_fine_tune_status(job_id):
     try:
         status_response = openai.fine_tuning.jobs.retrieve(job_id)
         status_dict = status_response.model_dump()
         print(f"Fine-Tune Job Status: {status_dict['status']}")
+
+        if status_dict['status'] == 'failed':
+            # 打印详细的错误信息
+            print("Fine-Tune Job Failed Details:")
+            if 'error' in status_dict:
+                print(status_dict['error'])
+
         return status_dict
     except Exception as e:
         print(f"Error checking Fine-Tune status: {e}")
         return None
+
 
 # 将 Fine-Tuned 模型 ID 保存到文件
 def save_fine_tuned_model_id(job_id, output_file="fine_tuned_model.json"):

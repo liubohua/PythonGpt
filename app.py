@@ -3,8 +3,6 @@ import openai
 import os
 import json
 
-from rich.ansi import console
-
 # 从环境变量中获取 OpenAI API Key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -92,7 +90,6 @@ def chat_page():
 def chat():
     user_message = request.json.get('message')
     try:
-        console.log(f"FINE_TUNED_MODEL：{FINE_TUNED_MODEL}")
         # 检查是否有微调后的模型 ID
         if not FINE_TUNED_MODEL:
             raise ValueError("Fine-Tuned model ID not found. Please make sure the model is fine-tuned and the ID is available.")

@@ -16,8 +16,10 @@ def upload_training_data(file_path):
                 file=f,
                 purpose='fine-tune'
             )
-        print(f"Training data uploaded successfully. File ID: {response['id']}")
-        return response['id']
+        # 由于新版 API 返回的是一个对象，而不是字典类型，使用 model_dump() 来提取信息
+        response_dict = response.model_dump()
+        print(f"Training data uploaded successfully. File ID: {response_dict['id']}")
+        return response_dict['id']
     except Exception as e:
         print(f"Error uploading training data: {e}")
         return None
@@ -29,8 +31,9 @@ def start_fine_tuning(training_file_id, model="gpt-3.5-turbo"):
             training_file=training_file_id,
             model=model
         )
-        print(f"Fine-Tuning job started successfully. Job ID: {response['id']}")
-        return response['id']
+        response_dict = response.model_dump()
+        print(f"Fine-Tuning job started successfully. Job ID: {response_dict['id']}")
+        return response_dict['id']
     except Exception as e:
         print(f"Error starting Fine-Tuning job: {e}")
         return None
@@ -39,8 +42,9 @@ def start_fine_tuning(training_file_id, model="gpt-3.5-turbo"):
 def check_fine_tune_status(job_id):
     try:
         status_response = openai.fine_tuning.jobs.retrieve(job_id)
-        print(f"Fine-Tune Job Status: {status_response['status']}")
-        return status_response
+        status_dict = status_response.model_dump()
+        print(f"Fine-Tune Job Status: {status_dict['status']}")
+        return status_dict
     except Exception as e:
         print(f"Error checking Fine-Tune status: {e}")
         return None

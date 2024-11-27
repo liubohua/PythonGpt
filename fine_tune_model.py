@@ -12,7 +12,7 @@ if openai.api_key is None:
 def upload_training_data(file_path):
     try:
         with open(file_path, "rb") as f:
-            response = openai.File.create(
+            response = openai.files.create(
                 file=f,
                 purpose='fine-tune'
             )
@@ -25,7 +25,7 @@ def upload_training_data(file_path):
 # 启动 Fine-Tuning 任务
 def start_fine_tuning(training_file_id, model="gpt-3.5-turbo"):
     try:
-        response = openai.FineTuningJob.create(
+        response = openai.fine_tuning.jobs.create(
             training_file=training_file_id,
             model=model
         )
@@ -38,7 +38,7 @@ def start_fine_tuning(training_file_id, model="gpt-3.5-turbo"):
 # 查询 Fine-Tuning 任务状态
 def check_fine_tune_status(job_id):
     try:
-        status_response = openai.FineTuningJob.retrieve(job_id)
+        status_response = openai.fine_tuning.jobs.retrieve(job_id)
         print(f"Fine-Tune Job Status: {status_response['status']}")
         return status_response
     except Exception as e:

@@ -1,33 +1,21 @@
-from flask import Flask, request, jsonify, render_template_string
-import openai
 import os
-import json
-
-from openai import OpenAI, api_key
-
-# 从环境变量中获取 API Key
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-# 读取微调后的模型 ID
-def load_fine_tuned_model_id():
-    try:
-        with open("fine_tuned_model.json", "r") as file:
-            data = json.load(file)
-            id = data.get("fine_tuned_model_id")
-            print(f"file read id:ID={id}")
-            return data.get("fine_tuned_model_id")
-    except FileNotFoundError:
-        return None
-
-# 加载微调后的模型 ID
-FINE_TUNED_MODEL = load_fine_tuned_model_id()
+from flask import Flask, request, jsonify, render_template_string
+from openai import OpenAI
 
 # 创建 Flask 实例
 app = Flask(__name__)
 
+# 实例化一个 OpenAI 客户端
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# 读取 Fine-Tuned 模型的 ID
+with open("fine_tuned_model.txt", "r") as f:
+    FINE_TUNED_MODEL = f.read().strip()
+
 # 主页面路由
 @app.route('/')
 def index():
-    return "Hello, this is the ChatGPT API integration with Fine-Tuned model!"
+    return "Hello, this is the ChatGPT API integration demo!"
 
 # 显示聊天页面
 @app.route('/chat', methods=['GET'])
@@ -38,23 +26,17 @@ def chat_page():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Chat with Fine-Tuned ChatGPT FINE_TUNED_MODEL: {FINE_TUNED_MODEL}</title>
+        <title>Chat with ChatGPT</title>
     </head>
     <body>
-        <h1>Chat with ChatGPT (Fine-Tuned)</h1>
+        <h1>Chat with ChatGPT</h1>
         <div>
-            <textarea id="userInput" placeholder="Enter your message here...FINE_TUNED_MODEL: {FINE_TUNED_MODEL}"></textarea><br>
+            <textarea id="userInput" placeholder="Enter your message here..."></textarea><br>
             <button onclick="sendMessage()">Send</button>
         </div>
         <div id="chatBox"></div>
 
         <script>
-        // 通过 Python 渲染传递模型 ID 到 JavaScript 代码
-            const fineTunedModel = "{{ model_id }}";
-            console.log(`FINE_TUNED_MODEL: ${fineTunedModel}`);
-
-            const fineTunedModel2 = "{{ api_key }}";
-            console.log(`key: ${fineTunedModel2}`);
             function sendMessage() {
                 const message = document.getElementById("userInput").value;
                 if (!message) {
@@ -87,15 +69,16 @@ def chat_page():
     </body>
     </html>
     '''
-    return render_template_string(html_content, model_id=FINE_TUNED_MODEL, api_key=os.getenv("OPENAI_API_KEY"))
+    return render_template_string(html_content)
 
-# 接收用户消息并返回 Fine-Tuned ChatGPT 的响应
+# 接收用户消息并返回 ChatGPT 的响应
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.json.get('message')
     try:
+        # 使用显式实例化客户端调用 API
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model=FINE_TUNED_MODEL,
             messages=[
                 {"role": "user", "content": user_message}
             ]

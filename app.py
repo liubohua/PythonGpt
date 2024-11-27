@@ -4,15 +4,15 @@ from openai import OpenAI
 
 # 创建 Flask 实例
 app = Flask(__name__)
-
+key = os.getenv("OPENAI_API_KEY")
 # 实例化一个 OpenAI 客户端
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=key)
 # 读取 Fine-Tuned 模型的 ID
 with open("fine_tuned_model.json", "r") as f:
     FINE_TUNED_MODEL = f.read().strip()
 
 print(f"Using model ID: {FINE_TUNED_MODEL}")
-print(f"API:{os.getenv("OPENAI_API_KEY")}")
+print(f"API:{key}")
 
 # 主页面路由
 @app.route('/')

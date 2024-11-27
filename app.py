@@ -9,7 +9,7 @@ app = Flask(__name__)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # 读取 Fine-Tuned 模型的 ID
-with open("fine_tuned_model.txt", "r") as f:
+with open("fine_tuned_model.json", "r") as f:
     FINE_TUNED_MODEL = f.read().strip()
 
 # 主页面路由

@@ -50,7 +50,7 @@ def chat_page():
 
         <script>
         // 通过 Python 渲染传递模型 ID 到 JavaScript 代码
-            const fineTunedModel = "{FINE_TUNED_MODEL}";
+            const fineTunedModel = "{{ model_id }}";
             console.log(`FINE_TUNED_MODEL: ${fineTunedModel}`);
 
             function sendMessage() {
@@ -85,7 +85,7 @@ def chat_page():
     </body>
     </html>
     '''
-    return render_template_string(html_content)
+    return render_template_string(html_content, model_id=FINE_TUNED_MODEL)
 
 # 接收用户消息并返回 Fine-Tuned ChatGPT 的响应
 @app.route('/chat', methods=['POST'])

@@ -47,7 +47,7 @@ def chat_page():
     <body>
         <h1>Chat with ChatGPT (Fine-Tuned)</h1>
         <div>
-            <textarea id="userInput" placeholder="Enter your message here..."></textarea><br>
+            <textarea id="userInput" placeholder="Enter your message here...FINE_TUNED_MODEL: {FINE_TUNED_MODEL}"></textarea><br>
             <button onclick="sendMessage()">Send</button>
         </div>
         <div id="chatBox"></div>

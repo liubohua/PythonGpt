@@ -78,9 +78,7 @@ if __name__ == "__main__":
         # Step 2: 启动 Fine-Tuning 任务
         fine_tune_job_id = start_fine_tuning(training_file_id)
 
-        # Step 3: 保存 Fine-Tuned 模型 ID
-        save_fine_tuned_model_id(fine_tune_job_id)
-        # Step 4: 等待任务完成并检查状态
+        # Step 3: 等待任务完成并检查状态
         if fine_tune_job_id:
             while True:
                 status_response = check_fine_tune_status(fine_tune_job_id)
@@ -88,3 +86,5 @@ if __name__ == "__main__":
                     break
                 time.sleep(30)  # 每隔 30 秒检查一次状态
 
+            # Step 4: 保存 Fine-Tuned 模型 ID
+            save_fine_tuned_model_id(fine_tune_job_id)

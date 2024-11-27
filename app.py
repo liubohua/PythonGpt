@@ -11,6 +11,8 @@ def load_fine_tuned_model_id():
     try:
         with open("fine_tuned_model.json", "r") as file:
             data = json.load(file)
+            id = data.get("fine_tuned_model_id")
+            print(f"file read id:ID={id}")
             return data.get("fine_tuned_model_id")
     except FileNotFoundError:
         return None

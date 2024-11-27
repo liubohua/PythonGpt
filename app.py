@@ -33,6 +33,7 @@ def index():
 # 显示聊天页面
 @app.route('/chat', methods=['GET'])
 def chat_page():
+    console.log(f"FINE_TUNED_MODEL：{FINE_TUNED_MODEL}")
     html_content = '''
     <!DOCTYPE html>
     <html lang="en">

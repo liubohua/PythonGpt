@@ -39,9 +39,6 @@ def chat_page():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Chat with Fine-Tuned ChatGPT FINE_TUNED_MODEL: {FINE_TUNED_MODEL}</title>
-        <script>
-            console.log(f"FINE_TUNED_MODEL: {FINE_TUNED_MODEL}");
-        </script>
     </head>
     <body>
         <h1>Chat with ChatGPT (Fine-Tuned)</h1>
@@ -52,6 +49,10 @@ def chat_page():
         <div id="chatBox"></div>
 
         <script>
+        // 通过 Python 渲染传递模型 ID 到 JavaScript 代码
+            const fineTunedModel = "{FINE_TUNED_MODEL}";
+            console.log(`FINE_TUNED_MODEL: ${fineTunedModel}`);
+
             function sendMessage() {
                 const message = document.getElementById("userInput").value;
                 if (!message) {

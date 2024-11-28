@@ -29,50 +29,179 @@ def chat_page():
     html_content = '''
     <!DOCTYPE html>
     <html lang="en">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Chat with ChatGPT</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+        <script src="https://unpkg.com/element-ui@2.15.14/lib/index.js"></script>
+        <!-- 引入样式 -->
+        <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.14/lib/theme-chalk/index.css">
     </head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #F0F0F6;
+        }
+
+        body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 10px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+        }
+
+        #app {
+            width: 100%;
+            height: 100%;
+        }
+
+        .message-body {
+            width: 100%;
+            max-width: 800px;
+            min-height: 100%;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .message-cell {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .message-cell .avatar {
+            width: 30px;
+            min-width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            font-size: 12px;
+            background-color: #FFF;
+            border-radius: 4px;
+            margin-bottom: auto;
+        }
+
+        .message-cell .message {
+            margin-left: 10px;
+            font-size: 16px;
+        }
+
+        .message-cell.gpt .message {
+            background-color: #FFF;
+            padding: 10px;
+            border-radius: 8px;
+            line-height: 28px;
+        }
+
+        .message-input {
+            width: 100%;
+            max-width: 800px;
+            margin: 10px auto;
+            box-shadow: 0 2px 6px #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            background-color: #FFF;
+            flex-direction: column;
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .message-input .el-button {
+            margin-top: 10px;
+            margin-left: auto;
+        }
+    </style>
+
     <body>
-        <h1>Chat with ChatGPT</h1>
-        <div>
-            <textarea id="userInput" placeholder="Enter your message here..."></textarea><br>
-            <button onclick="sendMessage()">Send</button>
+        <div id="app">
+            <div class="message-body">
+                <div v-for="item,index in listInfo" :key="index" class="message-cell"
+                    :class="{you:item.type==0,gpt:item.type==1}">
+                    <div class="avatar" v-text="item.type == 0 ? 'YOU' : 'GPT'"></div>
+                    <div class="message" v-html="item.text"></div>
+                </div>
+            </div>
+            <div class="message-input">
+                <el-input v-model="message" type="textarea" rows="5" placeholder="Enter your message here..."></el-input>
+                <el-button type="primary" round size="small" @click="sendMessage" :loading="loading">Send</el-button>
+            </div>
         </div>
-        <div id="chatBox"></div>
 
         <script>
-            function sendMessage() {
-                const message = document.getElementById("userInput").value;
-                if (!message) {
-                    alert("Please enter a message!");
-                    return;
-                }
-
-                fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ message: message })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    let chatBox = document.getElementById("chatBox");
-                    if (data.error) {
-                        chatBox.innerHTML += `<p>Server error: ${data.error}</p>`;
-                    } else {
-                        chatBox.innerHTML += `<p>You: ${message}</p>`;
-                        chatBox.innerHTML += `<p>ChatGPT: ${data.response}</p>`;
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    message: '',
+                    listInfo: [],
+                    loading: false
+                },
+                created () {
+                    let listInfoStr = localStorage.getItem('gpt-list-info');
+                    if (listInfoStr) {
+                        this.listInfo = JSON.parse(listInfoStr);
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }
+                },
+                methods: {
+                    sendMessage () {
+                        let message = this.message;
+                        if (!message) {
+                            return this.$message.error('Please enter a message!');
+                        }
+                        this.loading = true;
+                        this.listInfo.push({
+                            text: message,
+                            type: 0
+                        })
+                        fetch('/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ message: message })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                let chatBox = document.getElementById("chatBox");
+                                if (data.error) {
+                                    this.listInfo.push({
+                                        text: `Server error: ${data.error}`,
+                                        type: 1,
+                                        status: 'error'
+                                    })
+                                } else {
+                                    this.listInfo.push({
+                                        text: data.response,
+                                        type: 1,
+                                        status: 'ok'
+                                    })
+                                }
+                                this.loading = false;
+                                localStorage.setItem('gpt-list-info', JSON.stringify(this.listInfo));
+                            })
+                            .catch(error => {
+                                this.loading = false;
+                                console.error('Error:', error);
+                            });
+                    }
+                }
+            })
         </script>
     </body>
+
     </html>
     '''
     return render_template_string(html_content)
